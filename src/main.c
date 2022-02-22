@@ -292,7 +292,7 @@ int	init_philosophers(t_env *env, t_philo *philos)
 		philos[i].id = i + 1;
 		philos[i].own_fork = &env->forks[i];
 		j = (philos[i].id != env->nb_philo) * (i + 1);
-		philos[i].borrowed_fork = &env->forks[i + 1];
+		philos[i].borrowed_fork = &env->forks[j];
 		philos[i].starting_time = 0;
 		philos[i].last_meal_time = 0;
 		if (env->must_eat_times < 1)
@@ -302,6 +302,7 @@ int	init_philosophers(t_env *env, t_philo *philos)
 		philos[i].is_uneven = (philos[i].id % 2);
 		philos[i].is_first = (philos[i].is_uneven && philos[i].id == 1);
 		philos[i].is_last = (philos[i].is_uneven && philos[i].id == env->nb_philo);
+		printf("Philo[%i] owns fork %i and borrowed %i\n", philos[i].id, philos[i].own_fork, philos[i].borrowed_fork);
 		i++;
 	}
 	return (0);
@@ -536,8 +537,8 @@ int	eat_action(t_philo *philo, t_env *env)
 	if (env->must_eat_times > 0)
 		philo->meals_left--;
 	time = env->time_to_eat;
-	/*if (env->time_to_eat > env->time_to_die)*/
-	/*    time = env->time_to_die;*/
+	if (env->time_to_eat > env->time_to_die)
+		time = env->time_to_die;
 	usleep(time * 1000);
 	return (DONE_EATING);
 }
@@ -643,7 +644,7 @@ void	*routine(void *arg)
 		if (think(philo, env) != DONE_THINKING)
 			break;
 	}
-	printf("Philo %i exiting...\n", philo->id);
+	/*printf("Philo %i exiting...\n", philo->id);*/
 	return (NULL);
 }
 
