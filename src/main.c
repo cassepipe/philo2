@@ -498,20 +498,21 @@ void	print_philo_think(const t_philo *philo)
 int	check_state(t_philo *philo, t_env *env)
 {
 	unsigned long	time;
-	int				ret;
 
-	ret = ALIVE;
+	if (env->quit > 0)
+		return (DEAD);
+	if (philo->meals_left == 0)
+		return (DONE_EATING);
 	if (get_time(&time) == ERROR)
 		return (ERROR);
 	time -= philo->last_meal_time;
-	if (env->quit > 0 || philo->meals_left == 0)
-		ret = DONE_EATING;
-	else if (time >= (unsigned long)env->time_to_die)
+	if (time > (unsigned long)env->time_to_die)
 	{
 		print_philo_death(philo);
-		ret = DEAD;
+		env->quit++;
+		return (DEAD);
 	}
-	return (ret);
+	return (ALIVE);
 }
 
 
@@ -595,9 +596,9 @@ int	sleeph(t_philo *philo, t_env *env)
 	print_philo_sleep(philo);
 	time_since_last_meal = time - philo->last_meal_time;
 	since_last_meal_plus_sleep = time_since_last_meal + (unsigned long)(env->time_to_sleep);
-	if (since_last_meal_plus_sleep > (unsigned long)(env->time_to_die))
-		time_since_last_meal = env->time_to_die - time_since_last_meal;
-	else
+	/*if (since_last_meal_plus_sleep > (unsigned long)(env->time_to_die))*/
+	/*    time_since_last_meal = env->time_to_die - time_since_last_meal;*/
+	/*else*/
 		time_since_last_meal = env->time_to_sleep;
 	usleep(time_since_last_meal * 1000);
 	return (DONE_SLEEPING);
