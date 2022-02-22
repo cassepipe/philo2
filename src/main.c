@@ -479,24 +479,28 @@ void	print_philo(const t_philo *philo, const char *action, int act_len)
 	write(STDOUT_FILENO, buffer, len);
 }
 
-void	print_philo_death(const t_philo *philo)
+void	print_philo_death(const t_philo *philo, t_env *env)
 {
-	print_philo(philo, DIE_STR, sizeof(DIE_STR) - 1);
+	if (env->quit == 0)
+		print_philo(philo, DIE_STR, sizeof(DIE_STR) - 1);
 }
 
-void	print_philo_eat(const t_philo *philo)
+void	print_philo_eat(const t_philo *philo, t_env *env)
 {
-	print_philo(philo, EAT_STR, sizeof(EAT_STR) - 1);
+	if (env->quit == 0)
+		print_philo(philo, EAT_STR, sizeof(EAT_STR) - 1);
 }
 
-void	print_philo_sleep(const t_philo *philo)
+void	print_philo_sleep(const t_philo *philo, t_env *env)
 {
-	print_philo(philo, SLEEP_STR, sizeof(SLEEP_STR) - 1);
+	if (env->quit == 0)
+		print_philo(philo, SLEEP_STR, sizeof(SLEEP_STR) - 1);
 }
 
-void	print_philo_think(const t_philo *philo)
+void	print_philo_think(const t_philo *philo, t_env *env)
 {
-	print_philo(philo, THINK_STR, sizeof(THINK_STR) - 1);
+	if (env->quit == 0)
+		print_philo(philo, THINK_STR, sizeof(THINK_STR) - 1);
 }
 
 /*Do I really need to check philo's meals left ?*/
@@ -513,7 +517,7 @@ int	check_state(t_philo *philo, t_env *env)
 	time -= philo->last_meal_time;
 	if (time > (unsigned long)env->time_to_die)
 	{
-		print_philo_death(philo);
+		print_philo_death(philo, env);
 		env->quit++;
 		return (DEAD);
 	}
@@ -527,7 +531,7 @@ int	eat_action(t_philo *philo, t_env *env)
 
 	if (get_time(&time) == ERROR)
 		return (ERROR);
-	print_philo_eat(philo);
+	print_philo_eat(philo, env);
 	philo->last_meal_time = time;
 	if (env->must_eat_times > 0)
 		philo->meals_left--;
@@ -586,7 +590,7 @@ int	sleeph(t_philo *philo, t_env *env)
 	if (get_time(&time) == ERROR)
 		return (ERROR);
 	/*time_since_start = time - philo->starting_time;*/
-	print_philo_sleep(philo);
+	print_philo_sleep(philo, env);
 	/*time_since_last_meal = time - philo->last_meal_time;*/
 	/*since_last_meal_plus_sleep = time_since_last_meal + (unsigned long)(env->time_to_sleep);*/
 	/*if (since_last_meal_plus_sleep > (unsigned long)(env->time_to_die))*/
@@ -601,14 +605,14 @@ int	sleeph(t_philo *philo, t_env *env)
 }
 
 
-int	think(t_philo *philo)
+int	think(t_philo *philo, t_env *env)
 {
 	unsigned long	time;
 
 	if (get_time(&time) == ERROR)
 		return (ERROR);
 	time -= philo->starting_time;
-	print_philo_think(philo);
+	print_philo_think(philo, env);
 	usleep(1000);
 	return (DONE_THINKING);
 }
@@ -636,7 +640,7 @@ void	*routine(void *arg)
 			break;
 		if (check_state(philo, env) != ALIVE)
 			break;
-		if (think(philo) != DONE_THINKING)
+		if (think(philo, env) != DONE_THINKING)
 			break;
 	}
 	printf("Philo %i exiting...\n", philo->id);
