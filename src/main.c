@@ -594,7 +594,7 @@ int	sleeph(t_philo *philo, t_env *env)
 	/*else*/
 	/*    time_since_last_meal = env->time_to_sleep;*/
 	/*usleep(time_since_last_meal * 1000);*/
-	usleep(env->time_to_sleep);
+	usleep(env->time_to_sleep * 1000);
 	return (DONE_SLEEPING);
 	/*Donc si le temps écoulé depuis le dernier ajouté au temps de sommeil est supérieur au temps de la mort, tu fais dormir ton philo la diff entre le temps*/
 	/*de mort et le temps écoulé depuis le dernier repas. Mindfuck*/
