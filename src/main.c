@@ -71,10 +71,10 @@ typedef struct s_env {
 	t_mutex	printlock;
 	int	nb_philo;
 	int quit;
-	int	time_to_die;
-	int time_to_eat;
-	int time_to_sleep;
-	int must_eat_times;
+	unsigned long	time_to_die;
+	unsigned long	time_to_eat;
+	unsigned long	time_to_sleep;
+	unsigned long	must_eat_times;
 } t_env;
 
 /*#include "main.h"*/
@@ -295,7 +295,10 @@ int	init_philosophers(t_env *env, t_philo *philos)
 		philos[i].borrowed_fork = &env->forks[i + 1];
 		philos[i].starting_time = 0;
 		philos[i].last_meal_time = 0;
-		philos[i].meals_left = env->must_eat_times;
+		if (env->must_eat_times < 1)
+			philos[i].meals_left = -1;
+		else
+			philos[i].meals_left = env->must_eat_times;
 		philos[i].is_uneven = (philos[i].id % 2);
 		philos[i].is_first = (philos[i].is_uneven && philos[i].id == 1);
 		philos[i].is_last = (philos[i].is_uneven && philos[i].id == env->nb_philo);
@@ -460,13 +463,16 @@ long	gettimeofday_in_ms()
 
 void	print_philo(const t_philo *philo, const char *action, int act_len)
 {
-	char	buffer[256];
-	int		len;
+	char			buffer[256];
+	int				len;
+	unsigned long	timestamp;
 
 	len = 0;
-	ulong_repr(gettimeofday_in_ms(), buffer, &len);
-	ft_memcpy(buffer + len, " Philo ", sizeof(" Philo ") - 1);
-	len += sizeof(" Philo ") - 1;
+	get_time(&timestamp);
+	timestamp = timestamp - philo->starting_time;
+	ulong_repr(timestamp, buffer, &len);
+	ft_memcpy(buffer + len, "ms Philo ", sizeof("ms Philo ") - 1);
+	len += sizeof("ms Philo ") - 1;
 	ulong_repr(philo->id, buffer + len, &len);
 	ft_memcpy(buffer + len, action, act_len);
 	len += act_len;
@@ -526,8 +532,8 @@ int	eat_action(t_philo *philo, t_env *env)
 	if (env->must_eat_times > 0)
 		philo->meals_left--;
 	time = env->time_to_eat;
-	if (env->time_to_eat > env->time_to_die)
-		time = env->time_to_die;
+	/*if (env->time_to_eat > env->time_to_die)*/
+	/*    time = env->time_to_die;*/
 	usleep(time * 1000);
 	return (DONE_EATING);
 }
@@ -560,9 +566,6 @@ int	eat(t_philo *philo, t_env *env)
 	t_fork	*fork2;
 	int		state;
 
-	state = check_state(philo, env);
-	if (state != ALIVE)
-		return (state);
 	assign_forks(&fork1, &fork2, philo);
 	state = eat_cycle(philo, env, fork1, fork2);
 	while (state != DONE_EATING)
@@ -579,14 +582,10 @@ int	sleeph(t_philo *philo, t_env *env)
 	/*unsigned long	time_since_start;*/
 	/*unsigned long	time_since_last_meal;*/
 	/*unsigned long	since_last_meal_plus_sleep;*/
-	int				state;
 
 	if (get_time(&time) == ERROR)
 		return (ERROR);
 	/*time_since_start = time - philo->starting_time;*/
-	state = check_state(philo, env);
-	if (state != ALIVE)
-		return (state);
 	print_philo_sleep(philo);
 	/*time_since_last_meal = time - philo->last_meal_time;*/
 	/*since_last_meal_plus_sleep = time_since_last_meal + (unsigned long)(env->time_to_sleep);*/
@@ -597,20 +596,18 @@ int	sleeph(t_philo *philo, t_env *env)
 	/*usleep(time_since_last_meal * 1000);*/
 	usleep(env->time_to_sleep);
 	return (DONE_SLEEPING);
+	/*Donc si le temps écoulé depuis le dernier ajouté au temps de sommeil est supérieur au temps de la mort, tu fais dormir ton philo la diff entre le temps*/
+	/*de mort et le temps écoulé depuis le dernier repas. Mindfuck*/
 }
 
 
-int	think(t_philo *philo, t_env *env)
+int	think(t_philo *philo)
 {
 	unsigned long	time;
-	int				state;
 
 	if (get_time(&time) == ERROR)
 		return (ERROR);
 	time -= philo->starting_time;
-	state = check_state(philo, env);
-	if (state != ALIVE)
-		return (state);
 	print_philo_think(philo);
 	usleep(1000);
 	return (DONE_THINKING);
@@ -618,24 +615,31 @@ int	think(t_philo *philo, t_env *env)
 
 void	*routine(void *arg)
 {
-	t_philo	*self;
+	t_philo	*philo;
 	t_env	*env;
 
-	self = (t_philo *) arg;
-	env = self->env;
-	if (self->id % 2)
+	philo = (t_philo *) arg;
+	env = philo->env;
+	if (philo->id % 2)
 		usleep(10000);
-	get_time(&self->starting_time);
-	get_time(&self->last_meal_time);
+	get_time(&philo->starting_time);
+	get_time(&philo->last_meal_time);
 	while (1)
 	{
-		if (eat(self, env) != DONE_EATING)
+		if (check_state(philo, env) != ALIVE)
 			break;
-		if (sleeph(self, env) != DONE_SLEEPING)
+		if (eat(philo, env) != DONE_EATING)
 			break;
-		if (think(self, env) != DONE_THINKING)
+		if (check_state(philo, env) != ALIVE)
+			break;
+		if (sleeph(philo, env) != DONE_SLEEPING)
+			break;
+		if (check_state(philo, env) != ALIVE)
+			break;
+		if (think(philo) != DONE_THINKING)
 			break;
 	}
+	printf("Philo %i exiting...\n", philo->id);
 	return (NULL);
 }
 
