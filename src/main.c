@@ -493,7 +493,6 @@ void	print_philo_think(const t_philo *philo)
 	print_philo(philo, THINK_STR, sizeof(THINK_STR) - 1);
 }
 
-
 /*Do I really need to check philo's meals left ?*/
 int	check_state(t_philo *philo, t_env *env)
 {
@@ -515,7 +514,6 @@ int	check_state(t_philo *philo, t_env *env)
 	return (ALIVE);
 }
 
-
 /*Need to check for end ?*/
 int	eat_action(t_philo *philo, t_env *env)
 {
@@ -527,10 +525,6 @@ int	eat_action(t_philo *philo, t_env *env)
 	philo->last_meal_time = time;
 	if (env->must_eat_times > 0)
 		philo->meals_left--;
-	if (env->must_eat_times > 0 && philo->meals_left == 0)
-	{
-		env->quit++;
-	}
 	time = env->time_to_eat;
 	if (env->time_to_eat > env->time_to_die)
 		time = env->time_to_die;
@@ -582,25 +576,26 @@ int	eat(t_philo *philo, t_env *env)
 int	sleeph(t_philo *philo, t_env *env)
 {
 	unsigned long	time;
-	unsigned long	time_since_start;
-	unsigned long	time_since_last_meal;
-	unsigned long	since_last_meal_plus_sleep;
+	/*unsigned long	time_since_start;*/
+	/*unsigned long	time_since_last_meal;*/
+	/*unsigned long	since_last_meal_plus_sleep;*/
 	int				state;
 
 	if (get_time(&time) == ERROR)
 		return (ERROR);
-	time_since_start = time - philo->starting_time;
+	/*time_since_start = time - philo->starting_time;*/
 	state = check_state(philo, env);
 	if (state != ALIVE)
 		return (state);
 	print_philo_sleep(philo);
-	time_since_last_meal = time - philo->last_meal_time;
-	since_last_meal_plus_sleep = time_since_last_meal + (unsigned long)(env->time_to_sleep);
+	/*time_since_last_meal = time - philo->last_meal_time;*/
+	/*since_last_meal_plus_sleep = time_since_last_meal + (unsigned long)(env->time_to_sleep);*/
 	/*if (since_last_meal_plus_sleep > (unsigned long)(env->time_to_die))*/
 	/*    time_since_last_meal = env->time_to_die - time_since_last_meal;*/
 	/*else*/
-		time_since_last_meal = env->time_to_sleep;
-	usleep(time_since_last_meal * 1000);
+	/*    time_since_last_meal = env->time_to_sleep;*/
+	/*usleep(time_since_last_meal * 1000);*/
+	usleep(env->time_to_sleep);
 	return (DONE_SLEEPING);
 }
 
