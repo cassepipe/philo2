@@ -16,10 +16,6 @@
 #define SLEEP_STR " is sleeping\n"
 #define THINK_STR " is thinking\n"
 
-#ifndef USLEEP_SPLIT
-# define USLEEP_SPLIT	500
-#endif
-
 #define NOERROR 0
 #define ERROR	-1
 #define	ALIVE	0
@@ -78,6 +74,22 @@ typedef struct s_env {
 } t_env;
 
 /*#include "main.h"*/
+
+#define USLEEP_SPLIT 10.0
+
+void	usleep_ms(unsigned int time_in_ms)
+{
+	float	time;
+	int				i;
+
+	i = 0;
+	time = ((float) time_in_ms) * 1000.0 / USLEEP_SPLIT;
+	while (i < USLEEP_SPLIT)
+	{
+		usleep(time);
+		i++;
+	}
+}
 
 void	*ft_memset(void *s, int c, size_t n)
 {
@@ -539,7 +551,7 @@ int	eat_action(t_philo *philo, t_env *env)
 	time = env->time_to_eat;
 	if (env->time_to_eat > env->time_to_die)
 		time = env->time_to_die;
-	usleep(time * 1000);
+	usleep_ms(time);
 	return (DONE_EATING);
 }
 
@@ -601,7 +613,7 @@ int	sleeph(t_philo *philo, t_env *env)
 	/*usleep(time_since_last_meal * 1000);*/
 	usleep(env->time_to_sleep * 1000);
 	return (DONE_SLEEPING);
-	/*Donc si le temps écoulé depuis le dernier ajouté au temps de sommeil est supérieur au temps de la mort, tu fais dormir ton philo la diff entre le temps*/
+	/*Donc si le temps écoulé depuis le dernier repas ajouté au temps de sommeil est supérieur au temps de la mort, tu fais dormir ton philo la diff entre le temps*/
 	/*de mort et le temps écoulé depuis le dernier repas. Mindfuck*/
 }
 
