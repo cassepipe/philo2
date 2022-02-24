@@ -20,9 +20,9 @@ CC	  		  	=	gcc-11
 #CC	  		  	=	clang-12
 
 #Add -Werror before correction
-CFLAGS			=	-Wall -Wextra  -Iinc -g3 -Wno-format
+CFLAGS			=	-Wall -Wextra -Werror -Iinc -g3
 
-ASAN			=	-fsanitize=address 
+ASAN			=	#-fsanitize=address 
 
 TSAN			=	#-fsanitize=thread
 
@@ -58,4 +58,13 @@ fclean:			clean
 
 re:				fclean all
 
-.PHONY:			all clean fclean re test 
+run:			all
+				./$(NAME) $(wordlist 2, 1000, $(MAKECMDGOALS))
+
+%: 				
+				@echo Done
+
+print_exec_name:
+				@echo $(NAME)
+
+.PHONY:			all clean fclean re run
