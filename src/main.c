@@ -326,7 +326,6 @@ int	init_philosophers(t_env *env, t_philo *philos)
 		philos[i].is_uneven = (philos[i].id % 2);
 		philos[i].is_first = (philos[i].is_uneven && philos[i].id == 1);
 		philos[i].is_last = (philos[i].is_uneven && philos[i].id == env->nb_philo);
-		printf("Philo[%i] owns fork %i and borrowed %i\n", philos[i].id, philos[i].own_fork, philos[i].borrowed_fork);
 		i++;
 	}
 	return (0);
@@ -334,8 +333,6 @@ int	init_philosophers(t_env *env, t_philo *philos)
 
 int	init_env(t_env *env, int ac, char **av)
 {
-	int ret;
-
 	if (ac != 5 && ac != 6)
 		return (7);
 	if (get_nb_philo(env, av))
@@ -712,7 +709,8 @@ int 	main(int ac, char **av)
 	ret = init_env(env, ac, av);
 	if (!ret)
 		ret = start_dinner(env);
-	wait_end(env);
+	if (!ret)
+		wait_end(env);
 	free_env(env);
 	return (ret);
 }
