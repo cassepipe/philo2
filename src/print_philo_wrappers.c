@@ -14,6 +14,13 @@
 #include "structs.h"
 #include "defines.h"
 
+void	print_philo_fork(unsigned long time, const t_philo *philo,
+		t_env *env)
+{
+	if (env->quit == 0)
+		print_philo(time, philo, FORK_STR, sizeof(FORK_STR) - 1);
+}
+
 void	print_philo_death(unsigned long time, const t_philo *philo, t_env *env)
 {
 	if (env->quit == 0)
@@ -23,7 +30,11 @@ void	print_philo_death(unsigned long time, const t_philo *philo, t_env *env)
 void	print_philo_eat(unsigned long time, const t_philo *philo, t_env *env)
 {
 	if (env->quit == 0)
+	{
+		print_philo_fork(time, philo, env);
+		print_philo_fork(time, philo, env);
 		print_philo(time, philo, EAT_STR, sizeof(EAT_STR) - 1);
+	}
 }
 
 void	print_philo_sleep(unsigned long time, const t_philo *philo, t_env *env)
@@ -38,12 +49,6 @@ void	print_philo_think(unsigned long time, const t_philo *philo, t_env *env)
 		print_philo(time, philo, THINK_STR, sizeof(THINK_STR) - 1);
 }
 
-void	print_philo_fork(unsigned long time, const t_philo *philo,
-		t_env *env)
-{
-	if (env->quit == 0)
-		print_philo(time, philo, FORK_STR, sizeof(FORK_STR) - 1);
-}
 
 /*void	print_philo_own_fork(unsigned long time, const t_philo *philo,*/
 /*        t_env *env)*/
