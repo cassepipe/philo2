@@ -1,3 +1,7 @@
+# Hidden file
+.*
+tags
+
 # Prerequisites
 *.d
 

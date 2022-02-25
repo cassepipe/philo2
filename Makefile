@@ -16,11 +16,14 @@
 
 NAME			=	philo
 
-CC	  		  	=	gcc-11
-#CC	  		  	=	clang-12
+CC	  		  	=	gcc
+#CC	  		  	=	clang
 
-#Add -Werror before correction
-CFLAGS			=	-Wall -Wextra -Werror -Iinc -g3
+INCLUDE_DIRS	=  inc
+
+INCLUDE_FLAGS	= $(patsubst %, -I./%, $(INCLUDE_DIRS))
+
+CFLAGS			=	-Wall -Wextra -Werror -g3
 
 ASAN			=	#-fsanitize=address 
 
@@ -32,8 +35,6 @@ SOURCES			=  $(wildcard src/*.c)
 
 LIBS			=  -pthread
 
-INC/HEADERS		=	
-
 OBJ/OBJECTS		=	$(patsubst src/%.c, obj/%.o, $(SOURCES))
 	
 
@@ -43,10 +44,10 @@ all:			$(NAME)
 
 $(NAME):		${OBJ/OBJECTS}
 				@echo "Linking..."
-				${CC} ${LIBS} ${ASAN} ${TSAN} ${ANALYSER} ${LDFLAGS} ${OBJ/OBJECTS} ${LIBS} -o $@ 
+				${CC} ${LIBS} ${ASAN} ${TSAN} ${LDFLAGS} ${OBJ/OBJECTS} ${LIBS} -o $@ 
 
-obj/%.o:		src/%.c	${INC/HEADERS} Makefile | obj
-				${CC} ${CFLAGS} ${ANALYSER} -c $< -o $@
+obj/%.o:		src/%.c Makefile | obj
+				${CC} ${CFLAGS} ${INCLUDE_FLAGS} -c $< -o $@
 obj:			
 				mkdir obj
 
@@ -58,13 +59,7 @@ fclean:			clean
 
 re:				fclean all
 
-run:			all
-				./$(NAME) $(wordlist 2, 1000, $(MAKECMDGOALS))
-
-%: 				
-				@echo Done
-
 print_exec_name:
 				@echo $(NAME)
 
-.PHONY:			all clean fclean re run
+.PHONY:			all clean fclean re print_exec_name
