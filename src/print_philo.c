@@ -14,13 +14,13 @@
 #include "print_philo.h"
 #include "structs.h"
 
-void	print_philo(unsigned long time, const t_philo *philo, const char *action, int act_len)
+void	print_philo(unsigned long time, const t_philo *philo,
+				const char *action, int act_len)
 {
 	char			buffer[256];
 	int				len;
 
 	len = 0;
-	get_time(&time);
 	time = time - philo->env->starting_time;
 	ulong_repr(time, buffer, &len);
 	ft_memcpy(buffer + len, "ms Philo ", sizeof("ms Philo ") - 1);

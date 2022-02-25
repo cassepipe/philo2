@@ -31,7 +31,7 @@ char	*ulong_repr(long n, char *buffer, int *len)
 	int				pos;
 
 	pos = 1;
-	i = n;
+	i = n / 10;
 	while (i)
 	{
 		i /= 10;
