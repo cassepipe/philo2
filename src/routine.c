@@ -13,6 +13,7 @@
 #include "routine.h"
 #include "structs.h"
 #include "defines.h"
+#include <unistd.h>
 
 void	*routine(void *arg)
 {
@@ -23,7 +24,7 @@ void	*routine(void *arg)
 	env = philo->env;
 	get_time(&philo->last_meal_time);
 	if (philo->id % 2)
-		usleep_ms(env->time_to_eat / 2);
+		usleep(env->time_to_eat * 1000 / 2);
 	while (1)
 	{
 		if (check_state(philo, env) != ALIVE)

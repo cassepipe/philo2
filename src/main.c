@@ -41,11 +41,12 @@ int	start_dinner(t_env *env)
 void	wait_end(t_env *env)
 {
 	int	i;
+	int r;
 
 	i = 0;
 	while (i < env->nb_philo)
 	{
-		pthread_join(env->philosophers[i].thread, NULL);
+		r = pthread_join(env->philosophers[i].thread, NULL);
 		i++;
 	}
 }

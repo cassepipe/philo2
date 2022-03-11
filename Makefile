@@ -16,8 +16,8 @@
 
 NAME			=	philo
 
-CC	  		  	=	gcc
-#CC	  		  	=	clang
+#CC	  		  	=	gcc
+CC	  		  	=	clang
 
 INCLUDE_DIRS	=  inc
 

@@ -14,17 +14,6 @@
 #include "defines.h"
 #include "structs.h"
 
-void	assign_forks(t_fork **fork1, t_fork **fork2, t_philo *philo)
-{
-	*fork1 = philo->own_fork;
-	*fork2 = philo->borrowed_fork;
-	/*if (philo->id % 2)*/
-	/*{*/
-	/*    *fork1 = philo->borrowed_fork;*/
-	/*    *fork1 = philo->own_fork;*/
-	/*}*/
-}
-
 /*Can't the lock happen inside the if statement ?*/
 int	take_fork(t_fork *fork)
 {

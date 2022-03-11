@@ -39,14 +39,12 @@ int	eat_cycle(t_philo *philo, t_env *env, t_fork *fork1, t_fork *fork2)
 		usleep(500);
 		return (DID_NOT_EAT);
 	}
-	/*print_philo_own_fork(0, philo, env);*/
 	if (take_fork(fork2) == DID_NOT_TAKE)
 	{
 		put_down_fork(fork1);
 		usleep(500);
 		return (DID_NOT_EAT);
 	}
-	/*print_philo_borrowed_fork(0, philo, env);*/
 	if (eat_action(philo, env) == ERROR)
 	{
 		put_down_both_forks(philo);
@@ -58,15 +56,15 @@ int	eat_cycle(t_philo *philo, t_env *env, t_fork *fork1, t_fork *fork2)
 
 int	eat(t_philo *philo, t_env *env)
 {
-	t_fork	*fork1;
-	t_fork	*fork2;
 	int		state;
 
-	assign_forks(&fork1, &fork2, philo);
-	state = eat_cycle(philo, env, fork1, fork2);
-	while (state != DONE_EATING)
+	while (1)
 	{
-		state = eat_cycle(philo, env, fork1, fork2);
+		state = eat_cycle(philo, env, philo->own_fork, philo->borrowed_fork);
+		if (state != DID_NOT_EAT)
+			return (state);
+		state = check_state(philo, env);
+		if (state != ALIVE)
+			return (state);
 	}
-	return (DONE_EATING);
 }

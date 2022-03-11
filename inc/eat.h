@@ -13,5 +13,6 @@ void usleep_ms(unsigned int time_in_ms);
 void print_philo_eat(unsigned long time,const t_philo *philo,t_env *env);
 int get_time(unsigned long *time);
 int eat_action(t_philo *philo,t_env *env);
+int	check_state(t_philo *philo, t_env *env);
 
 #endif /* EAT_H */
